@@ -1,13 +1,15 @@
+import 'package:finals/UserRentedCar.dart';
 import 'package:finals/cars.dart';
 import 'package:finals/variables.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
-
-
 import 'carlist.dart';
-import 'main.dart';void main() {
+import 'main.dart';
+
+
+void main() {
   runApp(MaterialApp(
     home: Home(),
   ));
@@ -55,8 +57,12 @@ class _HomeState extends State<Home> {
             MaterialPageRoute(builder: (context) =>  ViewCars()),
           );
         case 1:
-          // Navigate to Rented Cars page for the respective tab
-          // Replace the code below with your desired navigation logic
+          // Navigate to reserve Cars page for the respective tab
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) =>   UserRentedCarPage()),
+          );
+
           break;
         case 2:
           // Navigate to Available Cars page for the respective tab
