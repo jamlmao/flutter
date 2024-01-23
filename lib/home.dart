@@ -72,11 +72,19 @@ class _HomeState extends State<Home> {
             MaterialPageRoute(builder: (context) => CarList()),
           );
           break;
+        case 3:
+        // Navigate to Available Cars page for the respective tab
+        // Replace the code below with your desired navigation logic
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => ViewCars()),
+          );
+          break;
       }
     });
   }
 
- 
+
 
   @override
   Widget build(BuildContext context) {
@@ -84,6 +92,7 @@ class _HomeState extends State<Home> {
       appBar: buildAppBar(),
       body: buildBody(),
       bottomNavigationBar: buildBottomNavigationBar(),
+      backgroundColor: Colors.blueGrey,
     );
   }
 
@@ -135,7 +144,7 @@ class _HomeState extends State<Home> {
           gradient: LinearGradient(
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
-            colors: [Colors.white38, Colors.blueGrey],
+            colors: [Colors.white38, Colors.black26],
           ),
           borderRadius: BorderRadius.circular(20.0),
         ),
@@ -145,7 +154,9 @@ class _HomeState extends State<Home> {
   }
 
   Widget buildTopContainerContent() {
-    return Stack(
+    return Container(
+      color:Colors.grey,
+      child:Stack(
       children: [
         Positioned(
           left: 5,
@@ -187,124 +198,139 @@ class _HomeState extends State<Home> {
           ),
         ),
       ],
+    ),
     );
   }
 
- 
 
-Widget buildMostRentedCarsContainer() {
-  return Align(
-    alignment: Alignment.bottomCenter, // Align to the bottom
-    child: Container(
-      margin: EdgeInsets.only(top: MediaQuery.of(context).size.height * 0.2 + 10),
-      height: MediaQuery.of(context).size.height * 0.7, // Increase the height
-      width: MediaQuery.of(context).size.width,
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(10.0),
-      ),
-      child: buildMostRentedCars(),
-    ),
-  );
-}
 
-  Widget buildMostRentedCars() {
-  return RefreshIndicator(
-    onRefresh: () async {
-      setState(() {});
-    },
-    child: FutureBuilder<List<dynamic>>(
-      future: fetchMostRentedCars(),
-      builder: (BuildContext context, AsyncSnapshot<List<dynamic>> snapshot) {
-        if (snapshot.hasData) {
-          return ListView.builder(
-            itemCount: snapshot.data!.length,
-            itemBuilder: (BuildContext context, int index) {
-              var car = snapshot.data![index];
-              return Card(
-                  color: Colors.transparent,
-                  child: Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Container(
-                      height: MediaQuery.of(context).size.height/ 7 ,
-                      decoration: BoxDecoration(
-                        gradient: LinearGradient(
-                          begin: Alignment.topLeft,
-                          end: Alignment.bottomRight,
-                          colors: [Colors.white38, Colors.blueGrey],
-                        ),
-                        borderRadius: BorderRadius.circular(5.0),
-                      ),
-                      child: Center(
-                        child: ListTile(
-                          leading: Image.network(
-                            '${car['image']}',
-                            width: 110.0,
-                            height: 105.0,
-                            fit: BoxFit.cover,
-                          ),
-                          title: Text('${car['brand']}',
-                                style: TextStyle(
-                                      fontSize: 18,
-                                      fontStyle: FontStyle.italic
-                                )
-                              ),
-                          subtitle: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                  '${car['name']}',
-                                  style: TextStyle(
-                                      fontSize: 18,
-                                      fontStyle: FontStyle.italic
-                              )
-
-                              ),
-                              Text('Rent counter: ${car['pickup_counter']}',
-                                  style: TextStyle(
-                                  fontSize: 18,
-                                  fontStyle: FontStyle.italic
-                              )),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-                );
-                            },
-          );
-        } else if (snapshot.hasError) {
-          return Text('Error: ${snapshot.error}');
-        } else {
-          return Center(child: CircularProgressIndicator());
-        }
-      },
-    ),
-  );
-}
-
-  BottomNavigationBar buildBottomNavigationBar() {
-      return BottomNavigationBar(
-        onTap: onTabTapped,
-        currentIndex: _currentIndex,
-        items: [
-          BottomNavigationBarItem(
-            icon: Icon(Icons.directions_car),
-            label: 'View Cars',
+    Widget buildMostRentedCarsContainer() {
+      return Align(
+        alignment: Alignment.bottomCenter, // Align to the bottom
+        child: Container(
+          margin: EdgeInsets.only(top: MediaQuery.of(context).size.height * 0.2 + 10),
+          height: MediaQuery.of(context).size.height * 0.7, // Increase the height
+          width: MediaQuery.of(context).size.width,
+          decoration: BoxDecoration(
+            color: Colors.blueGrey,
+            borderRadius: BorderRadius.circular(10.0),
           ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.car_rental),
-            label: 'Rented Cars',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.local_taxi),
-            label: 'Available Cars',
-          ),
-        ],
+          child: buildMostRentedCars(),
+        ),
       );
     }
 
+      Widget buildMostRentedCars() {
+        return RefreshIndicator(
+          onRefresh: () async {
+            setState(() {});
+          },
+          child: FutureBuilder<List<dynamic>>(
+            future: fetchMostRentedCars(),
+            builder: (BuildContext context, AsyncSnapshot<List<dynamic>> snapshot) {
+              if (snapshot.hasData) {
+                return snapshot.data!.isEmpty
+                    ? Center(
+                  child: Text(
+                    'No cars are available.',
+                    style: TextStyle(fontSize: 18),
+                  ),
+                )
+                    : ListView.builder(
+                  itemCount: snapshot.data!.length,
+                  itemBuilder: (BuildContext context, int index) {
+                    var car = snapshot.data![index];
+                    return Card(
+                      color: Colors.transparent,
+                      child: Padding(
+                        padding: const EdgeInsets.all(1.0),
+                        child: Container(
+                          height: MediaQuery.of(context).size.height / 7,
+                          decoration: BoxDecoration(
+                            gradient: LinearGradient(
+                              begin: Alignment.topLeft,
+                              end: Alignment.bottomRight,
+                              colors: [Colors.white38, Colors.grey],
+                            ),
+                            borderRadius: BorderRadius.circular(5.0),
+                          ),
+                          child: Center(
+                            child: ListTile(
+                              leading: Image.network(
+                                '${car['image']}',
+                                width: 110.0,
+                                height: 105.0,
+                                fit: BoxFit.cover,
+                              ),
+                              title: Text(
+                                '${car['brand']}',
+                                style: TextStyle(
+                                    fontSize: 18, fontStyle: FontStyle.italic),
+                              ),
+                              subtitle: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                      '${car['name']}',
+                                      style: TextStyle(
+                                          fontSize: 18,
+                                          fontStyle: FontStyle.italic)),
+                                  Text(
+                                      'Rent counter: ${car['pickup_counter']}',
+                                      style: TextStyle(
+                                          fontSize: 18,
+                                          fontStyle: FontStyle.italic)),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                    );
+                  },
+                );
+              } else if (snapshot.hasError) {
+                return Center(
+                  child: Text(
+                    'No cars are available.',
+                    style: TextStyle(fontSize: 18),
+                  ),
+                );
+              } else {
+                return Center(child: CircularProgressIndicator());
+              }
+            },
+          ),
+        );
+      }
+
+  BottomNavigationBar buildBottomNavigationBar() {
+    return BottomNavigationBar(
+      onTap: onTabTapped,
+      currentIndex: _currentIndex,
+      backgroundColor: Colors.blueGrey,
+      items: [
+        BottomNavigationBarItem(
+          icon: Icon(Icons.directions_car),
+          label: 'View Cars',
+        ),
+        BottomNavigationBarItem(
+          icon: Icon(Icons.car_rental),
+          label: 'Reserved Cars',
+        ),
+        BottomNavigationBarItem(
+          icon: Icon(Icons.local_taxi),
+          label: 'Available Cars',
+        ),
+        BottomNavigationBarItem(
+          icon: Icon(Icons.history),
+          label: 'Rented Cars',
+        ),
+      ],
+      selectedItemColor: Colors.black,
+      unselectedItemColor: Colors.blue,
+    );
+  }
 
 
 }

@@ -76,7 +76,7 @@ class _ViewCarsState extends State<ViewCars> {
         ),
         body: WillPopScope(
           onWillPop: () async {
-            // Handle back button press
+
             return true; // Return true to allow back navigation
           },
           child: RefreshIndicator(

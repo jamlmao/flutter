@@ -1,4 +1,4 @@
-import'dart:convert';
+import 'dart:convert';
 
 import 'package:finals/variables.dart';
 import 'package:flutter/material.dart';
@@ -7,6 +7,11 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import 'home.dart';
 
+void main() {
+  runApp(MaterialApp(
+    home: UserRentedCarPage(),
+  ));
+}
 
 class UserRentedCarPage extends StatefulWidget {
   @override
@@ -25,7 +30,6 @@ class _UserRentedCarPageState extends State<UserRentedCarPage> {
 
     if (response.statusCode == 200) {
       var data = jsonDecode(response.body);
-      print('Received data: $data'); // Print received data
       return data['reservedUnpaidCars'];
     } else {
       print('Failed to load most rented cars. Status code: ${response.statusCode}');
@@ -54,13 +58,19 @@ class _UserRentedCarPageState extends State<UserRentedCarPage> {
       ),
       body: Container(
         padding: const EdgeInsets.only(top: 20.0),
-        color: Colors.grey.shade100, // Set a consistent background color
+        color: Colors.grey.shade100,
         child: RefreshIndicator(
           onRefresh: _refresh,
           child: FutureBuilder<List<dynamic>>(
             future: fetchUserReservedCars(),
             builder: (BuildContext context, AsyncSnapshot<List<dynamic>> snapshot) {
-              if (snapshot.hasData) {
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return Center(child: CircularProgressIndicator());
+              } else if (snapshot.hasError) {
+                return Center(child: Text('No reserved cars.'));
+              } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                return Center(child: Text('No reserved cars.'));
+              } else {
                 return Center(
                   child: ListView.builder(
                     itemCount: snapshot.data!.length,
@@ -76,7 +86,7 @@ class _UserRentedCarPageState extends State<UserRentedCarPage> {
                           ),
                           color: Colors.blueGrey,
                           child: Padding(
-                            padding: const EdgeInsets.all(10.0), // Add 10 pixels of height
+                            padding: const EdgeInsets.all(10.0),
                             child: ListTile(
                               leading: Image.network(car['image']),
                               title: Text(car['brand']),
@@ -89,12 +99,6 @@ class _UserRentedCarPageState extends State<UserRentedCarPage> {
                     },
                   ),
                 );
-              } else if (snapshot.hasError) {
-                return Center(
-                  child: Text('Error: ${snapshot.error}'),
-                );
-              } else {
-                return Center(child: CircularProgressIndicator());
               }
             },
           ),
