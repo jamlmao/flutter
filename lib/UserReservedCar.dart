@@ -37,6 +37,9 @@ class _UserRentedCarPageState extends State<UserRentedCarPage> {
     }
   }
 
+    
+
+
   Future<void> _refresh() async {
     setState(() {}); // Add your refresh logic here
   }
@@ -49,6 +52,10 @@ class _UserRentedCarPageState extends State<UserRentedCarPage> {
       ),
     );
   }
+
+
+
+
 
   @override
   Widget build(BuildContext context) {
@@ -91,7 +98,7 @@ class _UserRentedCarPageState extends State<UserRentedCarPage> {
                               leading: Image.network(car['image']),
                               title: Text(car['brand']),
                               subtitle: Text('Rent counter: ${car['pickup_counter']}'),
-                              trailing: Icon(snapshot.data![index]['payment_status'] == 'unpaid' ? Icons.lock : Icons.lock_open),
+                              trailing: Icon(Icons.lock_open),
                             ),
                           ),
                         ),

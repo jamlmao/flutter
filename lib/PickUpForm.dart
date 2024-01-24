@@ -4,6 +4,7 @@ import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:intl/intl.dart';
 import 'variables.dart';
+
 class PickupPage extends StatefulWidget {
   final int carId;
 
@@ -49,7 +50,7 @@ class _PickupPageState extends State<PickupPage> {
           _carImage = data['image'];
           _carPrice = data['price'];
           _carBrand = data['brand'];
-          _carName= data['name'];
+          _carName = data['name'];
         });
       } else {
         print('Server responded with status code: ${response.statusCode}');
@@ -58,6 +59,45 @@ class _PickupPageState extends State<PickupPage> {
       print('Failed to load car details: $e');
     }
   }
+
+      Future<void> cancelReservation(int carId) async {
+        final SharedPreferences prefs = await SharedPreferences.getInstance();
+         final String? token = prefs.getString('token');
+        var response = await http.post(
+          Uri.parse('$ipaddress/rent/$carId/cancel'),
+          headers: <String, String>{
+          'Accept': 'application/json',
+          'Content-Type': 'application/json; charset=UTF-8',
+          'Authorization': 'Bearer $token',
+
+          },
+        );
+
+        if (response.statusCode == 200) {
+          showDialog(
+            context: context,
+            builder: (BuildContext context) {
+              return AlertDialog(
+                title: Text('Confirmation'),
+                content: Text('Reservation cancelled successfully.'),
+                actions: <Widget>[
+                  TextButton(
+                    child: Text('OK'),
+                    onPressed: () {
+                       Navigator.popUntil(context, ModalRoute.withName('/'));
+                    },
+                  ),
+                ],
+              );
+            },
+          );
+        } else {
+          // handle error
+          ScaffoldMessenger.of(context)
+              .showSnackBar(SnackBar(content: Text('Failed to cancel')),
+              );
+        }
+      }
 
   Future<void> pickupCar(int carId) async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -78,8 +118,24 @@ class _PickupPageState extends State<PickupPage> {
     );
 
     if (response.statusCode == 200) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Car picked up successfully')),
+      var data = jsonDecode(response.body);
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: Text('Confirmation'),
+            content: Text(
+                'Car picked up successfully. \nPlease pay: ${data['total_price']} at the shop'),
+            actions: <Widget>[
+              TextButton(
+                child: Text('OK'),
+                onPressed: () {
+                  Navigator.popUntil(context, ModalRoute.withName('/'));
+                },
+              ),
+            ],
+          );
+        },
       );
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -91,11 +147,12 @@ class _PickupPageState extends State<PickupPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-       backgroundColor: Colors.blueGrey,
+      backgroundColor: Colors.blueGrey,
       appBar: AppBar(
         title: Text('Set your Pickup Date'),
       ),
-      body: Container(// Set background color to blue-grey
+      body: Container(
+        // Set background color to blue-grey
         child: SingleChildScrollView(
           child: Padding(
             padding: const EdgeInsets.all(16.0),
@@ -105,30 +162,40 @@ class _PickupPageState extends State<PickupPage> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
                   // Remove Car ID Text
-                 Center(
+                  Center(
                     child: Text(
                       'Brand: $_carBrand', // Brand
-                      style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold, fontSize: 18.0),
+                      style: TextStyle(
+                          color: Colors.black,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 18.0),
                     ),
                   ),
                   Center(
-                    child:Text(
-                    _carName ?? '', // Model Name
-                    style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold, fontSize: 18.0),
-                  ), 
+                    child: Text(
+                      _carName ?? '', // Model Name
+                      style: TextStyle(
+                          color: Colors.black,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 18.0),
+                    ),
                   ),
                   Center(
-                    child:Text(
-                    'Price/Day: $_carPrice', // Price
-                    style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold, fontSize: 18.0),
-                  ),
+                    child: Text(
+                      'Price/Day: $_carPrice', // Price
+                      style: TextStyle(
+                          color: Colors.black,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 18.0),
+                    ),
                   ),
 
                   Image.network(_carImage ?? ''),
                   TextFormField(
                     controller: _pickupDateController,
                     decoration: InputDecoration(
-                      prefixIcon: Icon(Icons.calendar_today, color: Colors.black),
+                      prefixIcon:
+                          Icon(Icons.calendar_today, color: Colors.black),
                       labelText: 'Set your Pickup Date',
                       labelStyle: TextStyle(color: Colors.black),
                     ),
@@ -150,22 +217,21 @@ class _PickupPageState extends State<PickupPage> {
                       if (picked != null) {
                         _pickupDateController.text =
                             DateFormat('yyyy-MM-dd').format(picked);
+                        final numberOfDays =
+                            picked.difference(DateTime.now()).inDays +
+                                1; // +1 to include the current day
+                        if (_carPrice != null) {
+                          _amountController.text =
+                              (_carPrice! * numberOfDays).toString();
+                        } else {
+                          // _carPrice is null, handle this case as you see fit
+                          _amountController.text = 'Price not available';
+                        }
                       }
+                      ;
                     },
                   ),
-                  TextFormField(
-                    controller: _amountController,
-                    decoration: InputDecoration(
-                      labelText: 'Please input exact amount ( price x days)',
-                      labelStyle: TextStyle(color: Colors.black),
-                    ),
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'Please enter amount';
-                      }
-                      return null;
-                    },
-                  ),
+
                   TextFormField(
                     controller: _daysController,
                     decoration: InputDecoration(
@@ -181,16 +247,75 @@ class _PickupPageState extends State<PickupPage> {
                   ),
                   SizedBox(height: 16.0),
                   Center(
-                    child:ElevatedButton(
-                    onPressed: () {
-                      if (_formKey.currentState!.validate()) {
-                        pickupCar(widget.carId);
-                      }
-                    },
-                    child: Text('Submit'),
+                    child: ElevatedButton(
+                      onPressed: () async {
+                        if (_formKey.currentState!.validate()) {
+                          final proceed = await showDialog(
+                            context: context,
+                            builder: (BuildContext context) {
+                              return AlertDialog(
+                                title: Text('Confirmation'),
+                                content: Text('Do you want to continue?'),
+                                actions: <Widget>[
+                                  TextButton(
+                                    child: Text('No'),
+                                    onPressed: () {
+                                      Navigator.of(context).pop(false);
+                                    },
+                                  ),
+                                  TextButton(
+                                    child: Text('Yes'),
+                                    onPressed: () {
+                                      Navigator.of(context).pop(true);
+                                    },
+                                  ),
+                                ],
+                              );
+                            },
+                          );
+
+                          if (proceed) {
+                            pickupCar(widget.carId);
+                          }
+                        }
+                      },
+                      child: Text('Submit'),
+                    )
                   ),
+                  Center (
+                    child: ElevatedButton(
+                      onPressed: () async {
+                        final proceed = await showDialog(
+                          context: context,
+                          builder: (BuildContext context) {
+                            return AlertDialog(
+                              title: Text('Confirmation'),
+                              content: Text('Do you want to cancel the reservation?'),
+                              actions: <Widget>[
+                                TextButton(
+                                  child: Text('No'),
+                                  onPressed: () {
+                                    Navigator.of(context).pop(false);
+                                  },
+                                ),
+                                TextButton(
+                                  child: Text('Yes'),
+                                  onPressed: () {
+                                    Navigator.of(context).pop(true);
+                                  },
+                                ),
+                              ],
+                            );
+                          },
+                        );
+
+                        if (proceed) {
+                          cancelReservation(widget.carId);
+                        }
+                      },
+                      child: Text('Cancel Reservation'),
+                    ),
                   )
-                  
                 ],
               ),
             ),

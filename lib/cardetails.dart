@@ -117,7 +117,7 @@ class _CarDetailsPageState extends State<CarDetailsPage> {
                                 TextButton(
                                   child: Text('OK'),
                                   onPressed: () {
-                                    Navigator.of(context).pop(true);
+                                   Navigator.popUntil(context, ModalRoute.withName('/'));
                                   },
                                 ),
                               ],

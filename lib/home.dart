@@ -1,5 +1,7 @@
 import 'package:finals/UserReservedCar.dart';
 import 'package:finals/cars.dart';
+import 'package:finals/model/car.dart';
+import 'package:finals/returnCar.dart';
 import 'package:finals/variables.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
@@ -102,6 +104,7 @@ class _HomeState extends State<Home> {
         PopupMenuButton<String>(
           itemBuilder: (context) => [
             const PopupMenuItem(child: Text('Log Out'), value: 'logout'),
+            const PopupMenuItem(child: Text('Return a Car'), value: 'Return Car'),
           ],
           onSelected: (value) {
             if (value == 'logout') {
@@ -109,6 +112,12 @@ class _HomeState extends State<Home> {
                 context,
                 MaterialPageRoute(builder: (context) => MyLogin()),
               );
+            }else if (value == 'Return Car') {
+               Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => RentedCarsPage()),
+              );
+                
             }
           },
         ),
@@ -304,33 +313,33 @@ class _HomeState extends State<Home> {
         );
       }
 
-  BottomNavigationBar buildBottomNavigationBar() {
-    return BottomNavigationBar(
-      onTap: onTabTapped,
-      currentIndex: _currentIndex,
-      backgroundColor: Colors.blueGrey,
-      items: [
-        BottomNavigationBarItem(
-          icon: Icon(Icons.directions_car),
-          label: 'View Cars',
-        ),
-        BottomNavigationBarItem(
-          icon: Icon(Icons.car_rental),
-          label: 'Reserved Cars',
-        ),
-        BottomNavigationBarItem(
-          icon: Icon(Icons.local_taxi),
-          label: 'Available Cars',
-        ),
-        BottomNavigationBarItem(
-          icon: Icon(Icons.history),
-          label: 'Rented Cars',
-        ),
-      ],
-      selectedItemColor: Colors.black,
-      unselectedItemColor: Colors.blue,
-    );
-  }
+              BottomNavigationBar buildBottomNavigationBar() {
+                return BottomNavigationBar(
+                  onTap: onTabTapped,
+                  currentIndex: _currentIndex,
+                  backgroundColor: Colors.blueGrey,
+                  items: [
+                    BottomNavigationBarItem(
+                      icon: Icon(Icons.directions_car),
+                      label: 'Return Car',
+                    ),
+                    BottomNavigationBarItem(
+                      icon: Icon(Icons.car_rental),
+                      label: 'Reserved Cars',
+                    ),
+                    BottomNavigationBarItem(
+                      icon: Icon(Icons.local_taxi),
+                      label: 'Available Cars',
+                    ),
+                    BottomNavigationBarItem(
+                      icon: Icon(Icons.history),
+                      label: 'Rented Cars',
+                    ),
+                  ],
+                  selectedItemColor: Colors.black,
+                  unselectedItemColor: Colors.blue,
+                );
+              }
 
 
-}
+            }
