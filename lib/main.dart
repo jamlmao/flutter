@@ -1,12 +1,8 @@
 import 'package:flutter/material.dart';
-import 'signup.dart';
 import 'home.dart';
-import 'package:finals/carlist.dart';
 import 'model/user.dart';
-import 'model/car.dart';
 import 'package:finals/model/api_response.dart';
 import 'package:finals/services/user_services.dart';
-import 'package:finals/services/car_services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'style.dart';
 

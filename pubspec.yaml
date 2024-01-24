@@ -51,6 +51,7 @@ dev_dependencies:
   image_picker: ^1.0.7
   dio: ^5.4.0
   transparent_image: ^2.0.1
+  intl: ^0.17.0
 
 
 # For information on the generic Dart part of this file, see the

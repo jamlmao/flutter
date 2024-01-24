@@ -5,7 +5,8 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 
-import 'home.dart';
+import 'PickUpForm.dart';
+
 
 void main() {
   runApp(MaterialApp(
@@ -32,7 +33,6 @@ class _UserRentedCarPageState extends State<UserRentedCarPage> {
       var data = jsonDecode(response.body);
       return data['reservedUnpaidCars'];
     } else {
-      print('Failed to load most rented cars. Status code: ${response.statusCode}');
       throw Exception('Failed to load most rented cars');
     }
   }
@@ -45,7 +45,7 @@ class _UserRentedCarPageState extends State<UserRentedCarPage> {
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => Home(), // change to form for pick up
+        builder: (context) => PickupPage(carId: car['id']), // Pass the car ID
       ),
     );
   }

@@ -3,7 +3,6 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:finals/services/car_servicesv2.dart';
 import 'package:finals/model/api_response.dart';
 import 'package:finals/main.dart';
-import 'package:finals/cardetails.dart';
 import 'package:transparent_image/transparent_image.dart';
 
 class ViewCars extends StatefulWidget {
