@@ -1,8 +1,8 @@
-import 'package:finals/variables.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'variables.dart';
 
 class RentedCarsPage extends StatefulWidget {
   @override
@@ -47,16 +47,83 @@ class _RentedCarsPageState extends State<RentedCarsPage> {
       appBar: AppBar(
         title: Text('Rented Cars'),
       ),
-      body: ListView.builder(
+      body: Container(
+        padding: const EdgeInsets.only(top: 20.0),
+        color: Colors.grey.shade100,
+      child:ListView.builder(
         itemCount: rentedCars.length,
         itemBuilder: (context, index) {
-          return ListTile(
-            leading: Image.network(rentedCars[index]['car_image']),
-            title: Text(rentedCars[index]['car_name']),
-            subtitle: Text('Brand: ${rentedCars[index]['car_brand']}\nReturn Date: ${rentedCars[index]['return_date']}'),
+          return GestureDetector(
+            onTap: ()async {
+            final SharedPreferences prefs = await SharedPreferences.getInstance();
+            final String? token = prefs.getString('token');
+
+            bool? shouldReturn = await showDialog<bool>(
+              context: context,
+              builder: (BuildContext context) {
+                return AlertDialog(
+                  title: Text('Return Car'),
+                  content: Text('Do you want to return this car?'),
+                  actions: <Widget>[
+                    TextButton(
+                      child: Text('No'),
+                      onPressed: () {
+                        Navigator.of(context).pop(false);
+                      },
+                    ),
+                    TextButton(
+                      child: Text('Yes'),
+                      onPressed: () {
+                        Navigator.of(context).pop(true);
+                      },
+                    ),
+                  ],
+                );
+              },
+            );
+
+              if (shouldReturn == true) {
+                // Call the API to return the car
+                try {
+                  final carId = rentedCars[index]['car_id'];
+                  final response = await http.put(
+                  Uri.parse('$ipaddress/rent/$carId/return'),
+                    headers: {'Authorization': 'Bearer $token', 'Accept': 'application/json'},
+                  );
+
+                  if (response.statusCode == 200) {
+                    final responseData = jsonDecode(response.body);
+                     print('Response data: $responseData');
+                    print('Car returned successfully');
+                    // Refresh the list of rented cars
+                    fetchRentedCars();
+                  } else {
+                    print('Failed to return car. Status code: ${response.statusCode}');
+                    print('Response body: ${response.body}');
+                    throw Exception('Failed to return car');
+                  }
+                } catch (e) {
+                  print('Failed to return car: $e');
+                }
+              }
+            },
+            child: Container(
+              margin: const EdgeInsets.only(top: 10.0),
+              decoration: BoxDecoration(
+                color: Colors.blueGrey, // Set background color to blue-grey
+              ),
+              child: ListTile(
+                leading: Image.network(rentedCars[index]['car_image']),
+                title: Text(rentedCars[index]['car_name']),
+                subtitle: Text(
+                    'Brand: ${rentedCars[index]['car_brand']}\nReturn Date: ${rentedCars[index]['return_date']}'),
+                trailing: Icon(Icons.assignment_return), 
+              ),
+            ),
           );
         },
       ),
+    ),
     );
   }
 }
