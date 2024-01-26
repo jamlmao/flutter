@@ -84,6 +84,7 @@ class _CarDetailsPageState extends State<CarDetailsPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+         backgroundColor: Colors.grey.shade500.withOpacity(0.4),
         title: Text('Car Details'),
       ),
       body: Padding(

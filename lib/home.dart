@@ -2,6 +2,7 @@ import 'package:finals/UserReservedCar.dart';
 import 'package:finals/cars.dart';
 import 'package:finals/model/car.dart';
 import 'package:finals/returnCar.dart';
+import 'package:finals/userhistory.dart';
 import 'package:finals/variables.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
@@ -43,6 +44,9 @@ class Home extends StatefulWidget {
   _HomeState createState() => _HomeState();
 }
 
+
+
+
 class _HomeState extends State<Home> {
   int _currentIndex = 0;
 
@@ -79,7 +83,11 @@ class _HomeState extends State<Home> {
         // Replace the code below with your desired navigation logic
           Navigator.push(
             context,
-            MaterialPageRoute(builder: (context) => ViewCars()),
+            MaterialPageRoute(builder: (context) => 
+              
+                History(),
+              
+            ),
           );
           break;
       }
@@ -100,26 +108,27 @@ class _HomeState extends State<Home> {
 
   AppBar buildAppBar() {
     return AppBar(
+       backgroundColor: Colors.grey.shade50.withOpacity(0.4),
       actions: <Widget>[
         PopupMenuButton<String>(
           itemBuilder: (context) => [
             const PopupMenuItem(child: Text('Log Out'), value: 'logout'),
             const PopupMenuItem(child: Text('Return a Car'), value: 'Return Car'),
           ],
-          onSelected: (value) {
-            if (value == 'logout') {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => MyLogin()),
-              );
-            }else if (value == 'Return Car') {
-               Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => RentedCarsPage()),
-              );
-                
-            }
-          },
+         onSelected: (value) async {
+          if (value == 'logout') {
+            final SharedPreferences prefs = await SharedPreferences.getInstance();
+            await prefs.remove('token');
+            Navigator.of(context).pushReplacement(
+              MaterialPageRoute(builder: (context) => MyLogin()),
+            );
+          } else if (value == 'Return Car') {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => RentedCarsPage()),
+            );
+          }
+        },
         ),
       ],
     );

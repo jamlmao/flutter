@@ -149,6 +149,7 @@ class _PickupPageState extends State<PickupPage> {
     return Scaffold(
       backgroundColor: Colors.blueGrey,
       appBar: AppBar(
+         backgroundColor: Colors.grey.shade500.withOpacity(0.4),
         title: Text('Set your Pickup Date'),
       ),
       body: Container(

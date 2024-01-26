@@ -61,6 +61,7 @@ class _UserRentedCarPageState extends State<UserRentedCarPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+         backgroundColor: Colors.grey.shade500.withOpacity(0.4),
         title: Text('Your Reserved Cars'),
       ),
       body: Container(

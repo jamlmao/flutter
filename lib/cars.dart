@@ -4,7 +4,8 @@ import 'package:finals/services/car_servicesv2.dart';
 import 'package:finals/model/api_response.dart';
 import 'package:finals/main.dart';
 import 'package:transparent_image/transparent_image.dart';
-
+import 'home.dart';
+import 'main.dart';
 class ViewCars extends StatefulWidget {
   const ViewCars({Key? key}) : super(key: key);
 
@@ -57,19 +58,17 @@ class _ViewCarsState extends State<ViewCars> {
       debugShowCheckedModeBanner: false,
       home: Scaffold(
         appBar: AppBar(
+           backgroundColor: Colors.grey.shade500.withOpacity(0.4),
           title: const Text("View Cars"),
           actions: [
             IconButton(
               onPressed: () async {
-                final SharedPreferences prefs =
-                await SharedPreferences.getInstance();
-                await prefs.remove('token');
-                await prefs.remove('userId');
+
                 Navigator.of(context).pushReplacement(
-                  MaterialPageRoute(builder: (context) => MyLogin()),
+                  MaterialPageRoute(builder: (context) => Home()),
                 );
               },
-              icon: const Icon(Icons.logout),
+              icon: const Icon(Icons.arrow_back_ios),
             )
           ],
         ),
