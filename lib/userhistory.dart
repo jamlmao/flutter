@@ -7,7 +7,6 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import 'PickUpForm.dart';
 
-
 void main() {
   runApp(MaterialApp(
     home: History(),
@@ -20,38 +19,28 @@ class History extends StatefulWidget {
 }
 
 class _HistoryState extends State<History> {
+  Future<List<dynamic>> fetchUserRentalHistory() async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    final String? token = prefs.getString('token');
 
- Future<List<dynamic>> fetchUserRentalHistory() async {
-  final SharedPreferences prefs = await SharedPreferences.getInstance();
-  final String? token = prefs.getString('token');
+    final response = await http.get(
+      Uri.parse('$ipaddress/rent/history'),
+      headers: {'Authorization': 'Bearer $token', 'Accept': 'application/json'},
+    );
 
-  final response = await http.get(
-    Uri.parse('$ipaddress/rent/history'),
-    headers: {'Authorization': 'Bearer $token', 'Accept': 'application/json'},
-  );
-
-
-  print('Response status: ${response.statusCode}');
-  print('Response body: ${response.body}');
-  if (response.statusCode == 200) {
-    var data = jsonDecode(response.body);
-    return data['rentedCars'];
-  } else {
-    throw Exception('Failed to load rental history');
+    print('Response status: ${response.statusCode}');
+    print('Response body: ${response.body}');
+    if (response.statusCode == 200) {
+      var data = jsonDecode(response.body);
+      return data['rentedCars'];
+    } else {
+      throw Exception('Failed to load rental history');
+    }
   }
-}
-
-
 
   Future<void> _refresh() async {
     setState(() {}); // Add your refresh logic here
   }
-
-  
-
-
-
-
 
   @override
   Widget build(BuildContext context) {
@@ -67,7 +56,8 @@ class _HistoryState extends State<History> {
           onRefresh: _refresh,
           child: FutureBuilder<List<dynamic>>(
             future: fetchUserRentalHistory(),
-            builder: (BuildContext context, AsyncSnapshot<List<dynamic>> snapshot) {
+            builder:
+                (BuildContext context, AsyncSnapshot<List<dynamic>> snapshot) {
               if (snapshot.connectionState == ConnectionState.waiting) {
                 return Center(child: CircularProgressIndicator());
               } else if (snapshot.hasError) {
@@ -80,10 +70,11 @@ class _HistoryState extends State<History> {
                     itemCount: snapshot.data!.length,
                     itemBuilder: (BuildContext context, int index) {
                       var car = snapshot.data![index];
-                        return Padding(
-                          padding: const EdgeInsets.all(8.0),
+                      return Padding(
+                        padding: const EdgeInsets.all(8.0),
                         child: Card(
-                          margin: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
+                          margin: const EdgeInsets.symmetric(
+                              vertical: 8.0, horizontal: 16.0),
                           elevation: 2.0,
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(10.0),
@@ -96,7 +87,8 @@ class _HistoryState extends State<History> {
                                   ? Image.network(car['car_image'])
                                   : null,
                               title: Text(car['car_brand'] ?? ''),
-                              subtitle: Text('Return Date: ${car['return_date'] ?? ''}'),
+                              subtitle: Text(
+                                  'Return Date: ${car['return_date'] ?? ''}'),
                               trailing: Icon(Icons.lock_open),
                             ),
                           ),

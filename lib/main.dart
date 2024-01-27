@@ -219,7 +219,7 @@ class _MyAppState extends State<MyApp> {
                             onPressed: () {
                               Navigator.of(context).push(
                                 MaterialPageRoute(
-                                  builder: (context) => Home(),
+                                  builder: (context) => Register(),
                                 ),
                               );
                             },
