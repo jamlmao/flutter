@@ -52,10 +52,7 @@ dev_dependencies:
   dio: ^5.4.0
   transparent_image: ^2.0.1
   intl: ^0.17.0
-  charts_flutter: 
-    git:
-      url: https://github.com/google/charts.git
-      path: charts_flutter
+  fl_chart: ^0.36.4
 
 
 # For information on the generic Dart part of this file, see the

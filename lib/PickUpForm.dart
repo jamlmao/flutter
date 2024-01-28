@@ -3,6 +3,7 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:intl/intl.dart';
+import 'home.dart';
 import 'variables.dart';
 
 class PickupPage extends StatefulWidget {
@@ -130,7 +131,10 @@ class _PickupPageState extends State<PickupPage> {
               TextButton(
                 child: Text('OK'),
                 onPressed: () {
-                  Navigator.popUntil(context, ModalRoute.withName('/'));
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => Home()),
+                  );
                 },
               ),
             ],
